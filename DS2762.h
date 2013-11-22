@@ -24,23 +24,23 @@
 /*
 	DS2762 - High-Precision Li+ Battery Monitor With Alerts
 
-					   __   ┌-------------┐
-					   CC --+ 1°       16 +-- Vin
-							|             |
-					  PLS --+ 2        15 +-- Vdd
-					   __   |             |
-					   DC --+ 3        14 +-- PIO
-							|             |
-					  SNS --+ 4        13 +-- Vss
-							|             |
-					  SNS --+ 5        12 +-- Vss
-							|             |
-					  SNS --+ 6        11 +-- Vss
-							|             |   __
-					   DQ --+ 7        10 +-- PS
-							|             |
-					  1S2 --+ 8        9  +-- IS1
-							└-------------┘
+                       __   ┌-------------┐
+                       CC --+ 1°       16 +-- Vin
+                            |             |
+                      PLS --+ 2        15 +-- Vdd
+                       __   |             |
+                       DC --+ 3        14 +-- PIO
+                            |             |
+                      SNS --+ 4        13 +-- Vss
+                            |             |
+                      SNS --+ 5        12 +-- Vss
+                            |             |
+                      SNS --+ 6        11 +-- Vss
+                            |             |   __
+                       DQ --+ 7        10 +-- PS
+                            |             |
+                      1S2 --+ 8        9  +-- IS1
+                            └-------------┘
 
 
 					  1         CC - Charge Protection Control Output
@@ -65,7 +65,7 @@
 #define DS2762_WRITE_DATA              0x6C /* [0x6c, XX] Write data to memory starting at XX, max 256 bytes*/
 #define DS2762_COPY_DATA               0x48 /* [0x48, XX] Copies the shadow RAM to EEPROM, for the 16 byte block containing XX */
 #define DS2762_RECALL_DATA             0xB8 /* [0xB8, XX] Copies the 16 byte EEPROM block containing XX to shadow RAM */
-#define DS2762_LOCK	                   0x6A /* [0x6a, XX] WARNING - this command permanently write-protects the 16 byte block of EEPROM containing XX*/
+#define DS2762_LOCK                    0x6A /* [0x6a, XX] WARNING - this command permanently write-protects the 16 byte block of EEPROM containing XX*/
 #define DS2762_SWAP                    0xAA /* [0xAA]     See datasheet */
 
 /* Memory Map P. 14-17 */
@@ -150,9 +150,7 @@ enum DS2762_EEPROM {
 	BLOCK1 = DS2762_EEPROM_BLOCK1
 };
 
-
-class DS2762
-{
+class DS2762 {
 private:
 	OneWire* bus;
 	uint8_t* address;
@@ -161,17 +159,19 @@ private:
 	void _write_device(uint8_t* buf, uint8_t start, uint8_t count);
 	boolean _has_buffer();
 	uint8_t _read_register_bit(uint8_t register_address, uint8_t pin);
-	void _set_register_bit(uint8_t read_register_address, uint8_t write_register_address, uint8_t bit, DS2762_EEPROM block, boolean enabled);
+	void _set_register_bit(uint8_t read_register_address,
+			uint8_t write_register_address, uint8_t bit, DS2762_EEPROM block,
+			boolean enabled);
 
 public:
 	DS2762(OneWire*, uint8_t* address, boolean read_all = false);
 	~DS2762();
 
-    /*
-     * readDevice will read the entire contents of the DS2762 memory block into
-     * a local array, after this all read operations will be carried out from the
-     * local copy.
-     */
+	/*
+	 * readDevice will read the entire contents of the DS2762 memory block into
+	 * a local array, after this all read operations will be carried out from the
+	 * local copy.
+	 */
 	void readDevice();
 
 	/*
@@ -207,7 +207,7 @@ public:
 	 *
 	 * returns       - the number of bytes written
 	 */
-	uint32_t  writeEEPROM(byte* buf, uint32_t length, uint32_t eeprom_offset);
+	uint32_t writeEEPROM(byte* buf, uint32_t length, uint32_t eeprom_offset);
 
 	/*
 	 * writeEEPROM will write to the general purpose EEPROM (BLOCK0).
@@ -219,7 +219,7 @@ public:
 	 *
 	 * returns       - the number of bytes read
 	 */
-	uint32_t  readEEPROM(byte* buf, uint32_t length, uint32_t eeprom_offset);
+	uint32_t readEEPROM(byte* buf, uint32_t length, uint32_t eeprom_offset);
 
 	/*
 	 * reset frees the memory allocated by the readDevice method
@@ -231,30 +231,28 @@ public:
 	 */
 	void resetProtectionRegister();
 
-    //Protection Register
-    boolean isOverVoltage();
-    boolean isUnderVoltage();
-    boolean isChargeOverCurrent();
-    boolean isDischargeOverCurrent();
-    boolean isCCPin();
-    boolean isDCPin();
-    boolean isChargeEnable();
-    boolean isDischargeEnable();
+	//Protection Register
+	boolean isOverVoltage();
+	boolean isUnderVoltage();
+	boolean isChargeOverCurrent();
+	boolean isDischargeOverCurrent();
+	boolean isCCPin();
+	boolean isDCPin();
+	boolean isChargeEnable();
+	boolean isDischargeEnable();
 
-    //Status Register
-    boolean isSleepModeEnabled();
-    boolean isReadNetAddressOpcode();
-    boolean isSWAPEnabled();
-    boolean isInterruptEnabled();
-    void setSWAPEnabled(boolean enabled);
-    void setSleepMode(boolean enabled);
+	//Status Register
+	boolean isSleepModeEnabled();
+	boolean isReadNetAddressOpcode();
+	boolean isSWAPEnabled();
+	boolean isInterruptEnabled();
+	void setSWAPEnabled(boolean enabled);
+	void setSleepMode(boolean enabled);
 
-    //Special Feature Register
-    boolean isPSPinLatch();
-    boolean isPIO();
-    boolean isSWAPMasterStatusBit();
-
-
+	//Special Feature Register
+	boolean isPSPinLatch();
+	boolean isPIO();
+	boolean isSWAPMasterStatusBit();
 
 };
 
