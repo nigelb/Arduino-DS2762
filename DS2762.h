@@ -43,18 +43,18 @@
                             └-------------┘
 
 
-					  1         CC - Charge Protection Control Output
-					  2        PLS - Battery Pack Positive Terminal Input.
-					  3         DC - Discharge Protection Control Output.
-					  4,5,6    SNS - Sense Resistor Connection
-					  7         DQ - Data Input/Out, 1-Wire data line
-					  8        IS2 - Current-Sense Input
-					  9        IS1 - Current-Sense Input
-					  10        PS - Power Switch Sense Input
-					  11,12,13 Vss - Device Ground
-					  14       PIO - Programmable I/O Pin
-					  15       Vdd - Power-Supply Input
-					  16       Vin - Voltage Sense Input
+                      1         CC - Charge Protection Control Output
+                      2        PLS - Battery Pack Positive Terminal Input.
+                      3         DC - Discharge Protection Control Output.
+                      4,5,6    SNS - Sense Resistor Connection
+                      7         DQ - Data Input/Out, 1-Wire data line
+                      8        IS2 - Current-Sense Input
+                      9        IS1 - Current-Sense Input
+                      10        PS - Power Switch Sense Input
+                      11,12,13 Vss - Device Ground
+                      14       PIO - Programmable I/O Pin
+                      15       Vdd - Power-Supply Input
+                      16       Vin - Voltage Sense Input
 
  */
 #include <OneWire.h>
