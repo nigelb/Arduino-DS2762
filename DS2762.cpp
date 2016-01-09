@@ -65,41 +65,38 @@ boolean DS2762::_has_buffer()
 	return this->memory != NULL;
 }
 
-double DS2762::readADC()
+uint16_t DS2762::_read_uint16(uint8_t addr_msb, uint8_t addr_lsb)
 {
 	uint8_t MSB, LSB;
 	if(_has_buffer()){
-		MSB = this->memory[DS2762_VOLTAGE_MSB];
-		LSB = this->memory[DS2762_VOLTAGE_LSB];
+		MSB = this->memory[addr_msb];
+		LSB = this->memory[addr_lsb];
 
-	}else
+	}
+	else
 	{
 		uint8_t data[2];
-		_read_device(data, DS2762_VOLTAGE_MSB, 2);
+		_read_device(data, addr_msb, 2);
 		MSB = data[0];
 		LSB = data[1];
 	}
 	uint16_t count = ((MSB << 3 ) | (LSB >> 5)) ;
+}
 
+double DS2762::readADC()
+{
+	uint16_t count = _read_uint16(DS2762_VOLTAGE_MSB, DS2762_VOLTAGE_LSB);
 	return (double(count) * 4880)/1000000;
+}
+
+uint16_t DS2762::readTempRaw()
+{
+	return _read_uint16(DS2762_TEMP_MSB, DS2762_TEMP_LSB);
 }
 
 double DS2762::readTempC()
 {
-	uint8_t MSB, LSB;
-	if(_has_buffer()){
-		MSB = this->memory[DS2762_TEMP_MSB];
-		LSB = this->memory[DS2762_TEMP_LSB];
-	}else
-	{
-		uint8_t data[2];
-		_read_device(data, DS2762_TEMP_MSB, 2);
-		MSB = data[0];
-		LSB = data[1];
-	}
-
-	uint16_t count = (MSB << 3) | (LSB >> 5);
-	return (double(count) * 125) / 1000;
+	return (double(readTempRaw()) * 125) / 1000;
 
 }
 void DS2762::resetProtectionRegister()

@@ -162,6 +162,7 @@ private:
 	void _set_register_bit(uint8_t read_register_address,
 			uint8_t write_register_address, uint8_t bit, DS2762_EEPROM block,
 			boolean enabled);
+	uint16_t _read_uint16(uint8_t addr_msb, uint8_t addr_lsb);
 
 public:
 	DS2762(OneWire*, uint8_t* address, boolean read_all = false);
@@ -175,8 +176,14 @@ public:
 	void readDevice();
 
 	/*
+	 * Reads the raw temperature value from the DS2762 memory.
+	 *
+	 */
+	uint16_t readTempRaw();
+
+	/*
 	 * readTempC retrieves the current temperature from the DS2762's temperature
-	 * sensor.
+	 * sensor in Celcius.
 	 */
 	double readTempC();
 
