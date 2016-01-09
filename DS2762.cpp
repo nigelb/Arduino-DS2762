@@ -71,7 +71,6 @@ uint16_t DS2762::_read_uint16(uint8_t addr_msb, uint8_t addr_lsb)
 	if(_has_buffer()){
 		MSB = this->memory[addr_msb];
 		LSB = this->memory[addr_lsb];
-
 	}
 	else
 	{
@@ -80,13 +79,17 @@ uint16_t DS2762::_read_uint16(uint8_t addr_msb, uint8_t addr_lsb)
 		MSB = data[0];
 		LSB = data[1];
 	}
-	uint16_t count = ((MSB << 3 ) | (LSB >> 5)) ;
+	return ((MSB << 3 ) | (LSB >> 5));
+}
+
+uint16_t DS2762::readADCRaw()
+{
+	return _read_uint16(DS2762_VOLTAGE_MSB, DS2762_VOLTAGE_LSB);
 }
 
 double DS2762::readADC()
 {
-	uint16_t count = _read_uint16(DS2762_VOLTAGE_MSB, DS2762_VOLTAGE_LSB);
-	return (double(count) * 4880)/1000000;
+	return (double(readADCRaw()) * 4880)/1000000;
 }
 
 uint16_t DS2762::readTempRaw()

@@ -188,7 +188,12 @@ public:
 	double readTempC();
 
 	/*
-	 *
+	 * Reads the raw ADC value from the DS2762 memory.
+	 */
+	uint16_t readADCRaw();
+
+	/*
+	 * Reads the ADC value as a float in volts.
 	 */
 	double readADC();
 
