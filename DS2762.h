@@ -162,7 +162,7 @@ private:
 	void _set_register_bit(uint8_t read_register_address,
 			uint8_t write_register_address, uint8_t bit, DS2762_EEPROM block,
 			boolean enabled);
-	uint16_t _read_uint16(uint8_t addr_msb, uint8_t addr_lsb);
+	int16_t _read_int16(uint8_t addr_msb, uint8_t addr_lsb, int shift_lsb);
 
 public:
 	DS2762(OneWire*, uint8_t* address, boolean read_all = false);
@@ -177,25 +177,50 @@ public:
 
 	/*
 	 * Reads the raw temperature value from the DS2762 memory.
-	 *
+	 * Each count corresponds to 0.125C
 	 */
-	uint16_t readTempRaw();
+	int16_t readTempRaw();
 
 	/*
-	 * readTempC retrieves the current temperature from the DS2762's temperature
+	 * Retrieves the current temperature from the DS2762's temperature
 	 * sensor in Celcius.
 	 */
 	double readTempC();
 
 	/*
-	 * Reads the raw ADC value from the DS2762 memory.
+	 * Retrieves the temperature in Fahrenheit.
 	 */
-	uint16_t readADCRaw();
+	double readTempF();
 
 	/*
-	 * Reads the ADC value as a float in volts.
+	 * Reads the raw ADC value (voltage measurement register)
+	 * from the DS2762 memory.
+	 * Each count corresponds to 4.88mV
+	 */
+	int16_t readADCRaw();
+
+	/*
+	 * Reads the ADC value (voltage measurement register) as a float in volts.
 	 */
 	double readADC();
+
+	/*
+	 * Reads the raw value of the current measurement register.
+	 */
+	int16_t readCurrentRaw();
+
+	/*
+	 * For the internal sense resistor configuration, the DS2762 maintains
+	 * the current register in units of amps, with a resolution of 0.625mA
+	 * and full-scale range of no less than 1.9A. The DS2762 automatically
+	 * compensates for internal sense resistor process variations
+	 * and temperature effects when reporting current.
+	 *
+	 * For the external sense resistor configuration, the DS2762 writes the
+	 * measured VIS voltage to the current register,
+	 * with a 15.625 microV resolution and a full-scale 64mV range.
+	 */
+	double readCurrent(bool internal_sense_resistor);
 
 	/*
 	 * copyEEPROMBlock issues the DS2762_COPY_DATA command to the
