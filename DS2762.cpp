@@ -65,43 +65,75 @@ boolean DS2762::_has_buffer()
 	return this->memory != NULL;
 }
 
-double DS2762::readADC()
+int16_t DS2762::_read_int16(uint8_t addr_msb, uint8_t addr_lsb, int shift)
 {
 	uint8_t MSB, LSB;
 	if(_has_buffer()){
-		MSB = this->memory[DS2762_VOLTAGE_MSB];
-		LSB = this->memory[DS2762_VOLTAGE_LSB];
-
-	}else
+		MSB = this->memory[addr_msb];
+		LSB = this->memory[addr_lsb];
+	}
+	else
 	{
 		uint8_t data[2];
-		_read_device(data, DS2762_VOLTAGE_MSB, 2);
+		_read_device(data, addr_msb, 2);
 		MSB = data[0];
 		LSB = data[1];
 	}
-	uint16_t count = ((MSB << 3 ) | (LSB >> 5)) ;
+	return (int16_t)(((MSB << 8) | LSB) >> shift);
+}
 
-	return (double(count) * 4880)/1000000;
+int16_t DS2762::readADCRaw()
+{
+	return _read_int16(DS2762_VOLTAGE_MSB, DS2762_VOLTAGE_LSB, 5);
+}
+
+double DS2762::readADC()
+{
+	return (double(readADCRaw()) * 4880) / 1000000; // 4.88mV per count.
+}
+
+int16_t DS2762::readTempRaw()
+{
+	return _read_int16(DS2762_TEMP_MSB, DS2762_TEMP_LSB, 5);
 }
 
 double DS2762::readTempC()
 {
-	uint8_t MSB, LSB;
-	if(_has_buffer()){
-		MSB = this->memory[DS2762_TEMP_MSB];
-		LSB = this->memory[DS2762_TEMP_LSB];
-	}else
-	{
-		uint8_t data[2];
-		_read_device(data, DS2762_TEMP_MSB, 2);
-		MSB = data[0];
-		LSB = data[1];
-	}
-
-	uint16_t count = (MSB << 3) | (LSB >> 5);
-	return (double(count) * 125) / 1000;
-
+	return (double(readTempRaw()) * 125) / 1000;
 }
+
+double DS2762::readTempF()
+{
+	return (readTempC() * 1.8) + 32;
+}
+
+int16_t DS2762::readCurrentRaw()
+{
+	return _read_int16(DS2762_CURRENT_MSB, DS2762_CURRENT_LSB, 3);
+}
+
+double DS2762::readCurrent(bool internal_sense_resistor = 0)
+{
+	uint16_t count = readCurrentRaw();
+
+	if (internal_sense_resistor)
+	{
+		// For the internal sense resistor configuration, the DS2762 maintains
+		// the current register in units of amps, with a resolution of 0.625mA
+		// and full-scale range of no less than 1.9A. The DS2762 automatically
+		// compensates for internal sense resistor process variations
+		// and temperature effects when reporting current. 
+		return (double(count) * 6.25 ) / 10000; // 0.625mA per count.
+	}
+	else
+	{
+		// For the external sense resistor configuration, the DS2762 writes the
+		// measured VIS voltage to the current register,
+		// with a 15.625 microV resolution and a full-scale 64mV range.
+		return (double(count) * 15.625) / 100000;
+	}
+}
+
 void DS2762::resetProtectionRegister()
 {
 	uint8_t _register;
